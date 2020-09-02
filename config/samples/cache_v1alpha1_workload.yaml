@@ -1,0 +1,33 @@
+apiVersion: cache.ghostbaby.io/v1alpha1
+kind: Workload
+metadata:
+  name: workload-sample
+  namespace: pg
+spec:
+  version: v3.5.6
+  cluster:
+    name: test
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+    exporter:
+      exporter: true
+      exporterImage: ghostbaby/zookeeper_exporter
+      exporterVersion: v3.5.6
+      disableExporterProbes: false
+    nodeCount: 3
+    storage:
+      persistentVolumeClaim:
+        metadata:
+          name: zookeeper-data
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+          storageClassName: nfs-storage

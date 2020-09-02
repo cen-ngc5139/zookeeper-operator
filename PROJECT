@@ -1,0 +1,13 @@
+domain: ghostbaby.io
+repo: github.com/ghostbaby/zookeeper-operator
+resources:
+- group: cache
+  kind: Workload
+  version: v1alpha1
+- group: cache
+  kind: Trait
+  version: v1alpha1
+- group: cache
+  kind: Scope
+  version: v1alpha1
+version: "2"
