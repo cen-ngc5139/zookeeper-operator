@@ -20,6 +20,9 @@ import (
 	"flag"
 	"os"
 
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
+
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -28,6 +31,7 @@ import (
 
 	cachev1alpha1 "github.com/ghostbaby/zookeeper-operator/api/v1alpha1"
 	"github.com/ghostbaby/zookeeper-operator/controllers"
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/observer"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -72,6 +76,10 @@ func main() {
 		Log:           ctrl.Log.WithName("controllers").WithName("Workload"),
 		Recorder:      mgr.GetEventRecorderFor("Workload"),
 		Scheme:        mgr.GetScheme(),
+		Observers:     observer.NewManager(observer.DefaultSettings),
+		ObservedState: &observer.State{},
+		ZKClient:      &zk.BaseClient{},
+		Finalizers:    finalizer.NewHandler(mgr.GetClient()),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Workload")
 		os.Exit(1)

@@ -1,9 +1,9 @@
 package sts
 
 import (
-	"github.com/ghostbaby/zookeeper-operator/controllers/common/volume"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/cm"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/utils"
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/volume"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/model"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
