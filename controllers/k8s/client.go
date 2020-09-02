@@ -38,6 +38,8 @@ type Client interface {
 	Update(obj runtime.Object) error
 	// Patch wraps a controller-runtime client.Patch call with a context.
 	Patch(obj runtime.Object, patch client.Patch, opts ...client.PatchOption) error
+	// WriteStatus wraps a controller-runtime client.status().Update() call with a context.
+	WriteStatus(obj runtime.Object) error
 }
 
 type ClusterClient struct {
@@ -80,4 +82,8 @@ func (w *ClusterClient) Delete(obj runtime.Object, opts ...client.DeleteOption) 
 // Patch wraps a controller-runtime client.Patch call with a context.
 func (w *ClusterClient) Patch(obj runtime.Object, patch client.Patch, opts ...client.PatchOption) error {
 	return w.crClient.Patch(w.ctx, obj, patch, opts...)
+}
+
+func (w *ClusterClient) WriteStatus(obj runtime.Object) error {
+	return w.crClient.Status().Update(w.ctx, obj)
 }
