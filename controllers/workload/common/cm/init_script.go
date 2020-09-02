@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"html/template"
 
-	"github.com/ghostbaby/zookeeper-operator/controllers/common/volume"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/utils"
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/volume"
 	corev1 "k8s.io/api/core/v1"
 )
 
