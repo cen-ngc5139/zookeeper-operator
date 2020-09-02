@@ -1,0 +1,7 @@
+apiVersion: cache.ghostbaby.io/v1alpha1
+kind: Trait
+metadata:
+  name: trait-sample
+spec:
+  # Add fields here
+  foo: bar
