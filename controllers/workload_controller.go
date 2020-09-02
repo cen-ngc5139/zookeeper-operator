@@ -20,6 +20,16 @@ import (
 	"context"
 	"time"
 
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
+
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/provision"
+
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/utils"
+
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
+
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/observer"
+
 	"github.com/ghostbaby/zookeeper-operator/controllers/k8s"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/model"
@@ -45,9 +55,13 @@ import (
 type WorkloadReconciler struct {
 	client.Client
 	ServiceGetter
-	Log      logr.Logger
-	Scheme   *runtime.Scheme
-	Recorder record.EventRecorder
+	Log           logr.Logger
+	Scheme        *runtime.Scheme
+	Recorder      record.EventRecorder
+	Observers     *observer.Manager
+	ZKClient      *zk.BaseClient
+	ObservedState *observer.State
+	Finalizers    finalizer.Handler
 }
 
 var ReconcileWaitResult = reconcile.Result{RequeueAfter: 30 * time.Second}
@@ -87,12 +101,16 @@ func (r *WorkloadReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	option := &GetOptions{
-		Client:   k8s.WrapClient(ctx, r.Client),
-		Recorder: r.Recorder,
-		Log:      r.Log,
-		DClient:  k8s.WrapDClient(dClient),
-		Scheme:   r.Scheme,
-		Labels:   GenerateLabels(workload.Labels, workload.Name),
+		Client:        k8s.WrapClient(ctx, r.Client),
+		Recorder:      r.Recorder,
+		Log:           r.Log,
+		DClient:       k8s.WrapDClient(dClient),
+		Scheme:        r.Scheme,
+		Labels:        GenerateLabels(workload.Labels, workload.Name),
+		Observers:     r.Observers,
+		ZKClient:      r.ZKClient,
+		ObservedState: r.ObservedState,
+		Finalizers:    r.Finalizers,
 	}
 
 	if err := r.Workload(ctx, &workload, option).Reconcile(); err != nil {
@@ -126,6 +144,15 @@ func (r *WorkloadReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Owns(&corev1.Pod{}).
 		Watches(&source.Kind{Type: &appsv1.StatefulSet{}}, &handler.EnqueueRequestsFromMapFunc{ToRequests: mapFn}).
 		Watches(&source.Kind{Type: &corev1.Pod{}}, &handler.EnqueueRequestsFromMapFunc{ToRequests: mapFn}).
-		//Watches(observer.WatchClusterHealthChange(r.Observers), GenericEventHandler()).
+		Watches(observer.WatchClusterHealthChange(r.Observers), provision.GenericEventHandler()).
 		Complete(r)
+}
+
+func (r *WorkloadReconciler) finalizersFor(
+	zk cachev1alpha1.Workload,
+) []finalizer.Finalizer {
+	clusterName := utils.ExtractNamespacedName(&zk)
+	return []finalizer.Finalizer{
+		r.Observers.Finalizer(clusterName),
+	}
 }
