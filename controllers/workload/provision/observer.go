@@ -3,6 +3,8 @@ package provision
 import (
 	"net/http"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/utils"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
@@ -95,6 +97,7 @@ func (p *Provision) Observer() error {
 	if state.ClusterStats != nil {
 		p.Workload.Status.LeaderNode = state.ClusterStats.LeaderNode
 		p.Workload.Status.AvailableNodes = state.ClusterStats.AvailableNodes
+		p.Workload.Status.LastTransitionTime = metav1.Now()
 	}
 
 	p.ObservedState = &state
