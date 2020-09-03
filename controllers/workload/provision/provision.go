@@ -50,5 +50,10 @@ func (p *Provision) Reconcile() error {
 	if err := p.Observer(); err != nil {
 		return err
 	}
+
+	if err := p.Finalizers.Handle(p.Workload, p.finalizersFor(p.Workload)...); err != nil {
+		return err
+	}
+
 	return nil
 }

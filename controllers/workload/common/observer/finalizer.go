@@ -7,7 +7,7 @@ import (
 
 const (
 	// FinalizerName registered for each elasticsearch resource
-	FinalizerName = "finalizer.zookeeper.ymmoa.inc/observer"
+	FinalizerName = "finalizer.zookeeper.ghostbaby.io/observer"
 )
 
 // Finalizer returns a finalizer to be executed upon deletion of the given cluster,

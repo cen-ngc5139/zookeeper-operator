@@ -1,6 +1,7 @@
 package observer
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
@@ -31,6 +32,7 @@ func (m *Manager) Observe(cluster types.NamespacedName, zkClient zk.BaseClient) 
 	observer, exists := m.observers[cluster]
 	m.lock.RUnlock()
 
+	fmt.Println(exists)
 	switch {
 	case !exists:
 		return m.createObserver(cluster, zkClient)
