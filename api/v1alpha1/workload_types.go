@@ -141,6 +141,10 @@ type WorkloadStatus struct {
 	// ReadyReplicas is the number of number of ready replicas in the cluster
 	AvailableNodes int `json:"availableNodes,omitempty"`
 
+	// Last time the condition transitioned from one status to another.
+	// +optional
+	LastTransitionTime metav1.Time `json:"lastTransitionTime,omitempty"`
+
 	Phase ZooKeeperOrchestrationPhase `json:"phase,omitempty"`
 }
 
