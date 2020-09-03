@@ -1,4 +1,4 @@
-## RocketMQ Operator
+## ZooKeeper Operator
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Language](https://img.shields.io/badge/Language-Go-blue.svg)](https://golang.org/)
 [![GoDoc](https://img.shields.io/badge/Godoc-reference-blue.svg)](https://godoc.org/github.com/apache/rocketmq-operator/pkg)
