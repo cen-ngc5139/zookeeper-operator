@@ -24,8 +24,6 @@ import (
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/provision"
 
-	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/utils"
-
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/observer"
@@ -146,13 +144,4 @@ func (r *WorkloadReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Watches(&source.Kind{Type: &corev1.Pod{}}, &handler.EnqueueRequestsFromMapFunc{ToRequests: mapFn}).
 		Watches(observer.WatchClusterHealthChange(r.Observers), provision.GenericEventHandler()).
 		Complete(r)
-}
-
-func (r *WorkloadReconciler) finalizersFor(
-	zk cachev1alpha1.Workload,
-) []finalizer.Finalizer {
-	clusterName := utils.ExtractNamespacedName(&zk)
-	return []finalizer.Finalizer{
-		r.Observers.Finalizer(clusterName),
-	}
 }

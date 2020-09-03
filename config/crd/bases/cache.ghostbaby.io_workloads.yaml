@@ -1083,6 +1083,11 @@ spec:
               description: ReadyReplicas is the number of number of ready replicas
                 in the cluster
               type: integer
+            lastTransitionTime:
+              description: Last time the condition transitioned from one status to
+                another.
+              format: date-time
+              type: string
             leaderNode:
               type: string
             phase:
