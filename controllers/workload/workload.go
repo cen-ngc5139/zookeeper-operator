@@ -42,12 +42,11 @@ func (w *ReconcileWorkload) Reconcile() error {
 	if err := w.Provision(option); err != nil {
 		return err
 	}
-
 	return nil
 }
 
 func (w *ReconcileWorkload) Provision(option *GetOptions) error {
-	return w.ProvisionW(w.CTX, w.Workload, option).Reconcile()
+	return w.ProvisionWorkload(w.CTX, w.Workload, option).Reconcile()
 }
 
 func (w *ReconcileWorkload) Delete() error {
