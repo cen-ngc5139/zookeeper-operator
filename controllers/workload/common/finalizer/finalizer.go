@@ -2,7 +2,6 @@ package finalizer
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/utils"
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -40,7 +39,6 @@ func NewHandler(client client.Client) Handler {
 // from the resource.
 // Else, the function is making sure all finalizers are correctly registered for the resource.
 func (h *Handler) Handle(resource runtime.Object, finalizers ...Finalizer) error {
-	fmt.Println("*************8")
 	metaObject, err := meta.Accessor(resource)
 	if err != nil {
 		return err

@@ -23,7 +23,7 @@ type Reconciler interface {
 
 type Getter interface {
 	// For Provision
-	ProvisionW(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler
+	ProvisionWorkload(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler
 }
 
 type GetOptions struct {
@@ -42,7 +42,7 @@ type GetOptions struct {
 type GetterImpl struct {
 }
 
-func (impl *GetterImpl) ProvisionW(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler {
+func (impl *GetterImpl) ProvisionWorkload(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler {
 	return &provision.Provision{
 		Workload:      workload,
 		CTX:           ctx,

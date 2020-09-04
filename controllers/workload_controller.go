@@ -87,10 +87,10 @@ func (r *WorkloadReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		return ReconcileWaitResult, client.IgnoreNotFound(err)
 	}
 
-	// workload will be gracefully deleted by server when DeletionTimestamp is non-null
-	if workload.DeletionTimestamp != nil {
-		return ReconcileWaitResult, nil
-	}
+	//// workload will be gracefully deleted by server when DeletionTimestamp is non-null
+	//if workload.DeletionTimestamp != nil {
+	//	return ReconcileWaitResult, nil
+	//}
 
 	dClient, err := k8s.NewDynamicClient()
 	if err != nil {

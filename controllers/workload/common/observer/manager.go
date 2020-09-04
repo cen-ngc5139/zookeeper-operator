@@ -32,7 +32,6 @@ func (m *Manager) Observe(cluster types.NamespacedName, zkClient zk.BaseClient) 
 	observer, exists := m.observers[cluster]
 	m.lock.RUnlock()
 
-	fmt.Println(exists)
 	switch {
 	case !exists:
 		return m.createObserver(cluster, zkClient)
@@ -57,6 +56,8 @@ func (m *Manager) createObserver(cluster types.NamespacedName, zkClient zk.BaseC
 }
 
 func (m *Manager) ObservedStateResolver(cluster types.NamespacedName, zkClient zk.BaseClient) State {
+
+	fmt.Println(cluster)
 	return m.Observe(cluster, zkClient).LastState()
 }
 
