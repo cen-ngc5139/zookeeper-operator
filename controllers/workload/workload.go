@@ -39,24 +39,8 @@ func (w *ReconcileWorkload) Reconcile() error {
 	w.Client.WithContext(w.CTX)
 	option := w.GetOptions()
 
-	if err := w.Provision(option); err != nil {
+	if err := w.ProvisionWorkload(w.CTX, w.Workload, option).Reconcile(); err != nil {
 		return err
 	}
-	return nil
-}
-
-func (w *ReconcileWorkload) Provision(option *GetOptions) error {
-	return w.ProvisionWorkload(w.CTX, w.Workload, option).Reconcile()
-}
-
-func (w *ReconcileWorkload) Delete() error {
-	return nil
-}
-
-func (w *ReconcileWorkload) Scale() error {
-	return nil
-}
-
-func (w *ReconcileWorkload) Update() error {
 	return nil
 }
