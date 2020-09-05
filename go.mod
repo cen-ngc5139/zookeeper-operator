@@ -10,6 +10,8 @@ require (
 	github.com/onsi/ginkgo v1.12.1
 	github.com/onsi/gomega v1.10.1
 	github.com/pkg/errors v0.9.1
+	github.com/samuel/go-zookeeper v0.0.0-20200724154423-2164a8ac840e
+	gopkg.in/fatih/set.v0 v0.2.1
 	k8s.io/api v0.19.0
 	k8s.io/apimachinery v0.19.0
 	k8s.io/cli-runtime v0.19.0

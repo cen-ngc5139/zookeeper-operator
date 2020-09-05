@@ -15,29 +15,29 @@ import (
 )
 
 func (p *Provision) ProvisionStatefulset() error {
-	statefulSet := &appsv1.StatefulSet{}
+	actual := &appsv1.StatefulSet{}
 	name := p.Workload.Name
 	namespace := p.Workload.Namespace
 
 	s := sts.NewSTS(p.Workload, p.Labels)
 
-	dep, err := s.GenerateStatefulset()
+	expect, err := s.GenerateStatefulset()
 	if err != nil {
 		return err
 	}
-	if err := controllerutil.SetControllerReference(p.Workload, dep, p.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(p.Workload, expect, p.Scheme); err != nil {
 		return err
 	}
 
-	if err := p.Client.Get(types.NamespacedName{Name: name, Namespace: namespace}, statefulSet); err != nil && errors.IsNotFound(err) {
+	if err := p.Client.Get(types.NamespacedName{Name: name, Namespace: namespace}, actual); err != nil && errors.IsNotFound(err) {
 		p.Log.Info("Creating StatefulSet.",
 			"namespace", namespace, "name", name)
 
-		if err := p.Client.Create(dep); err != nil {
+		if err := p.Client.Create(expect); err != nil {
 			return err
 		}
 
-		p.ExpectSts = dep
+		p.ExpectSts = expect
 
 		msg := fmt.Sprintf(model.MessageZooKeeperStatefulset, name)
 		p.Recorder.Event(p.Workload, corev1.EventTypeNormal, model.ZooKeeperStatefulset, msg)
@@ -48,8 +48,8 @@ func (p *Provision) ProvisionStatefulset() error {
 	} else if err != nil {
 		return err
 	} else {
-		p.ExpectSts = dep
-		p.ActualSts = statefulSet
+		p.ExpectSts = expect
+		p.ActualSts = actual
 	}
 
 	return nil

@@ -3,6 +3,8 @@ package workload
 import (
 	"context"
 
+	appsv1 "k8s.io/api/apps/v1"
+
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
 
@@ -37,9 +39,26 @@ type GetOptions struct {
 	ZKClient      *zk.BaseClient
 	ObservedState *observer.State
 	Finalizers    finalizer.Handler
+	ExpectSts     *appsv1.StatefulSet
+	ActualSts     *appsv1.StatefulSet
 }
 
 type GetterImpl struct {
+}
+
+func (w *ReconcileWorkload) GetOptions() *GetOptions {
+	return &GetOptions{
+		Client:        w.Client,
+		Recorder:      w.Recorder,
+		Log:           w.Log,
+		DClient:       w.DClient,
+		Scheme:        w.Scheme,
+		Labels:        w.Labels,
+		Observers:     w.Observers,
+		ZKClient:      w.ZKClient,
+		ObservedState: w.ObservedState,
+		Finalizers:    w.Finalizers,
+	}
 }
 
 func (impl *GetterImpl) ProvisionWorkload(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler {
@@ -55,20 +74,5 @@ func (impl *GetterImpl) ProvisionWorkload(ctx context.Context, workload *cachev1
 		ZKClient:      options.ZKClient,
 		ObservedState: options.ObservedState,
 		Finalizers:    options.Finalizers,
-	}
-}
-
-func (w *ReconcileWorkload) GetOptions() *GetOptions {
-	return &GetOptions{
-		Client:        w.Client,
-		Recorder:      w.Recorder,
-		Log:           w.Log,
-		DClient:       w.DClient,
-		Scheme:        w.Scheme,
-		Labels:        w.Labels,
-		Observers:     w.Observers,
-		ZKClient:      w.ZKClient,
-		ObservedState: w.ObservedState,
-		Finalizers:    w.Finalizers,
 	}
 }
