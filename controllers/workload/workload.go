@@ -27,8 +27,6 @@ type ReconcileWorkload struct {
 	DClient       k8s.DClient
 	Scheme        *runtime.Scheme
 	Observers     *observer.Manager
-	ExpectCR      *cachev1alpha1.Workload
-	ActualCR      *cachev1alpha1.Workload
 	Labels        map[string]string
 	ZKClient      *zk.BaseClient
 	ObservedState *observer.State
@@ -40,6 +38,10 @@ func (w *ReconcileWorkload) Reconcile() error {
 	option := w.GetOptions()
 
 	if err := w.ProvisionWorkload(w.CTX, w.Workload, option).Reconcile(); err != nil {
+		return err
+	}
+
+	if err := w.ScaleWorkload(w.CTX, w.Workload, option).Reconcile(); err != nil {
 		return err
 	}
 	return nil

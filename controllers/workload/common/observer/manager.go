@@ -1,7 +1,6 @@
 package observer
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
@@ -36,6 +35,7 @@ func (m *Manager) Observe(cluster types.NamespacedName, zkClient zk.BaseClient) 
 	case !exists:
 		return m.createObserver(cluster, zkClient)
 	case exists && !observer.zkClient.Equal(&zkClient):
+		//case exists && !observer.zkClient.IsAlive(&zkClient):
 		log.Info("Replacing observer HTTP client", "namespace", cluster.Namespace, "zk_name", cluster.Name)
 		m.StopObserving(cluster)
 		return m.createObserver(cluster, zkClient)
@@ -56,8 +56,6 @@ func (m *Manager) createObserver(cluster types.NamespacedName, zkClient zk.BaseC
 }
 
 func (m *Manager) ObservedStateResolver(cluster types.NamespacedName, zkClient zk.BaseClient) State {
-
-	fmt.Println(cluster)
 	return m.Observe(cluster, zkClient).LastState()
 }
 

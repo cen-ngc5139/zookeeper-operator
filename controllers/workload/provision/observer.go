@@ -80,7 +80,7 @@ func (p *Provision) Observer() error {
 	//	DeletingPods:       deletingPods,
 	//}
 
-	zkUrl, zkUrls = utils.GetServiceUrl(p.Workload, currentPods)
+	zkUrl, zkUrls = utils.GetServiceUrl(p.Workload, currentPods[0:2])
 
 	cli := &zk.BaseClient{
 		Endpoints: zkUrls,
