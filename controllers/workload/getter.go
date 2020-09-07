@@ -3,6 +3,8 @@ package workload
 import (
 	"context"
 
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/scale"
+
 	appsv1 "k8s.io/api/apps/v1"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
@@ -26,6 +28,9 @@ type Reconciler interface {
 type Getter interface {
 	// For Provision
 	ProvisionWorkload(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler
+
+	// For Scale
+	ScaleWorkload(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler
 }
 
 type GetOptions struct {
@@ -74,5 +79,16 @@ func (impl *GetterImpl) ProvisionWorkload(ctx context.Context, workload *cachev1
 		ZKClient:      options.ZKClient,
 		ObservedState: options.ObservedState,
 		Finalizers:    options.Finalizers,
+	}
+}
+
+func (impl *GetterImpl) ScaleWorkload(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler {
+	return &scale.Scale{
+		Workload: workload,
+		Client:   options.Client,
+		Recorder: options.Recorder,
+		Log:      options.Log,
+		Labels:   options.Labels,
+		Scheme:   options.Scheme,
 	}
 }

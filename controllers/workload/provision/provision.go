@@ -55,9 +55,5 @@ func (p *Provision) Reconcile() error {
 		return err
 	}
 
-	if err := p.ReConfig(); err != nil {
-		return err
-	}
-
 	return nil
 }

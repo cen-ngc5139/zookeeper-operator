@@ -1,4 +1,4 @@
-package provision
+package scale
 
 import (
 	"context"
@@ -21,14 +21,14 @@ type AddMember struct {
 	Record string `json:"record"`
 }
 
-func (p Provision) ReConfig() error {
-	name := p.Workload.GetName()
-	namespace := p.Workload.GetNamespace()
+func (s *Scale) ReConfig() error {
+	name := s.Workload.GetName()
+	namespace := s.Workload.GetNamespace()
 
 	//获取目前正在允许的pod信息
-	currentPods, err := utils.GetCurrentPods(p.Client, p.Workload, p.Labels, p.Log)
+	currentPods, err := utils.GetCurrentPods(s.Client, s.Workload, s.Labels, s.Log)
 	if err != nil {
-		p.Log.Info(
+		s.Log.Info(
 			"Unable to get current pods.",
 			"error", err,
 			"namespace", namespace,
@@ -38,8 +38,8 @@ func (p Provision) ReConfig() error {
 	}
 
 	//获取期望 zk config内容
-	podNames := utils.PodNames(*p.ExpectSts)
-	AddMemberRecords := utils.GetPodIp(p.Workload, podNames)
+	podNames := utils.PodNames(*s.ExpectSts)
+	AddMemberRecords := utils.GetPodIp(s.Workload, podNames)
 	expectConfigRecord := set.New(set.ThreadSafe)
 
 	for _, v := range AddMemberRecords {
@@ -47,7 +47,7 @@ func (p Provision) ReConfig() error {
 	}
 
 	if len(currentPods) == 0 {
-		p.Log.Info("Cluster is building ,pls hold on.")
+		s.Log.Info("Cluster is building ,pls hold on.")
 		return nil
 	}
 	//生成zk connect client
@@ -68,7 +68,7 @@ func (p Provision) ReConfig() error {
 	defer cancel()
 	var config AddMember
 	if err := cli.Get(timeoutCtx, "/get", &config); err != nil {
-		p.Log.Info(
+		s.Log.Info(
 			"Unable to get zk config.",
 			"error", err,
 			"url", zkAgentUrl,
@@ -101,7 +101,7 @@ func (p Provision) ReConfig() error {
 
 	//如果待添加和待删除数组均为0，退出reconfig流程
 	if len(needAddArray) == 0 && len(needDelArray) == 0 {
-		p.Log.Info(
+		s.Log.Info(
 			"Don't need to update zk config.",
 			"url", zkAgentUrl,
 			"pod", randomPod.Name,
@@ -121,7 +121,7 @@ func (p Provision) ReConfig() error {
 		var result zkcli.Stat
 
 		if err := cli.Post(timeoutCtx, "/add", member, &result); err != nil {
-			p.Log.Info(
+			s.Log.Info(
 				"Unable to add member to zk.",
 				"error", err,
 				"url", zkAgentUrl,
@@ -144,7 +144,7 @@ func (p Provision) ReConfig() error {
 		var result zkcli.Stat
 
 		if err := cli.Post(timeoutCtx, "/del", member, &result); err != nil {
-			p.Log.Info(
+			s.Log.Info(
 				"Unable to add member to zk.",
 				"error", err,
 				"url", zkAgentUrl,

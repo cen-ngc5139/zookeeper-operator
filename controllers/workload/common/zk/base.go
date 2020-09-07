@@ -5,8 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/utils"
 )
@@ -99,4 +101,24 @@ func (c *BaseClient) Equal(c2 *BaseClient) bool {
 
 	// compare endpoint and user creds
 	return c.Endpoint == c2.Endpoint
+}
+
+func (c *BaseClient) IsAlive(c2 *BaseClient) bool {
+	// handle nil case
+	if c2 == nil && c != nil {
+		return false
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	timeoutCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+	defer cancel()
+	up, err := c.GetClusterUp(timeoutCtx)
+	if err != nil {
+		return false
+	}
+
+	fmt.Println(up)
+
+	// compare endpoint and user creds
+	return true
 }
