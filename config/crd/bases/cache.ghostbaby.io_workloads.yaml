@@ -677,10 +677,6 @@ spec:
                   maxLength: 23
                   pattern: '[a-zA-Z0-9-]+'
                   type: string
-                nodeCount:
-                  description: NodeCount defines how many nodes have this topology
-                  format: int32
-                  type: integer
                 resources:
                   description: RedisResources sets the limits and requests for a container
                   properties:
@@ -960,6 +956,9 @@ spec:
               type: object
             priorityClassName:
               type: string
+            replicas:
+              format: int32
+              type: integer
             tolerations:
               items:
                 description: The pod this Toleration is attached to tolerates any

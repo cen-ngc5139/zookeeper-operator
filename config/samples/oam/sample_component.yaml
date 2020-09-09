@@ -1,0 +1,25 @@
+apiVersion: core.oam.dev/v1alpha2
+kind: Component
+metadata:
+  name: zk-component
+spec:
+  workload:
+    apiVersion: cache.ghostbaby.io/v1alpha1
+    kind: Workload
+    spec:
+      version: v3.5.6
+      cluster:
+        name: test
+        resources:
+          requests:
+            cpu: 100m
+            memory: 500Mi
+        exporter:
+          exporter: true
+          exporterImage: ghostbaby/zookeeper_exporter
+          exporterVersion: v3.5.6
+          disableExporterProbes: false
+  parameters:
+    - name: name
+      fieldPaths:
+        - metadata.name

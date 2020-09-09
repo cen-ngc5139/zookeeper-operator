@@ -31,8 +31,10 @@ type WorkloadSpec struct {
 	Version string `json:"version,omitempty"`
 
 	// Image represents the docker image that will be used.
-	Image   string      `json:"image,omitempty"`
-	Cluster ClusterSpec `json:"cluster,omitempty"`
+	Image    string      `json:"image,omitempty"`
+	Cluster  ClusterSpec `json:"cluster,omitempty"`
+	Replicas *int32      `json:"replicas,omitempty"`
+
 	//PodDisruptionBudget *PodDisruptionBudgetTemplate `json:"podDisruptionBudget,omitempty"`
 	UpdateStrategy    UpdateStrategy      `json:"updateStrategy,omitempty"`
 	Affinity          *PodAffinity        `json:"affinity,omitempty"`
@@ -80,9 +82,6 @@ type ClusterSpec struct {
 	// +kubebuilder:validation:Pattern=[a-zA-Z0-9-]+
 	// +kubebuilder:validation:MaxLength=23
 	Name string `json:"name"`
-
-	// NodeCount defines how many nodes have this topology
-	NodeCount int32 `json:"nodeCount,omitempty"`
 
 	Storage Storage `json:"storage,omitempty"`
 

@@ -1,6 +1,7 @@
 package provision
 
 import (
+	"fmt"
 	"net/http"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -80,7 +81,11 @@ func (p *Provision) Observer() error {
 	//	DeletingPods:       deletingPods,
 	//}
 
-	zkUrl, zkUrls = utils.GetServiceUrl(p.Workload, currentPods[0:2])
+	if len(currentPods) == 0 {
+		return fmt.Errorf("current pods is zero, pls waitting....")
+	}
+
+	zkUrl, zkUrls = utils.GetServiceUrl(p.Workload, currentPods)
 
 	cli := &zk.BaseClient{
 		Endpoints: zkUrls,

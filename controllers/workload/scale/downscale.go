@@ -17,10 +17,10 @@ func (s *Scale) DownScale() error {
 		return nil
 	}
 	name := s.Workload.GetName()
-	expectReplica := *s.ExpectSts.Spec.Replicas
-	actualReplica := *s.ActualSts.Spec.Replicas
+	expectReplica := s.ExpectSts.Spec.Replicas
+	actualReplica := s.ActualSts.Spec.Replicas
 
-	if expectReplica < actualReplica {
+	if expectReplica != nil && actualReplica != nil && *expectReplica < *actualReplica {
 		msg := fmt.Sprintf(model.UpdateMessageZooKeeperStatefulset, name)
 		s.Recorder.Event(s.Workload, corev1.EventTypeNormal, model.ZooKeeperStatefulset, msg)
 
