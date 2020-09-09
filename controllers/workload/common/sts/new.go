@@ -96,7 +96,7 @@ func (s *STS) GenerateStatefulset() (*appsv1.StatefulSet, error) {
 
 	sts.Spec = appsv1.StatefulSetSpec{
 		ServiceName: name,
-		Replicas:    &s.Workload.Spec.Cluster.NodeCount,
+		Replicas:    s.Workload.Spec.Replicas,
 		Selector: &metav1.LabelSelector{
 			MatchLabels: s.Labels,
 		},
@@ -124,6 +124,7 @@ func (s *STS) GenerateStatefulset() (*appsv1.StatefulSet, error) {
 		PodManagementPolicy: appsv1.ParallelPodManagement,
 	}
 
+	// todo：check is spec.cluster.exporter defined
 	if s.Workload.Spec.Cluster.Exporter.Exporter {
 		exporter := s.CreateExporterContainer(s.Workload)
 		sts.Spec.Template.Spec.Containers = append(sts.Spec.Template.Spec.Containers, exporter)

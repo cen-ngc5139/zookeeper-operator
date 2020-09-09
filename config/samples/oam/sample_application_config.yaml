@@ -1,0 +1,18 @@
+apiVersion: core.oam.dev/v1alpha2
+kind: ApplicationConfiguration
+metadata:
+  name: zk-appconfig
+spec:
+  components:
+    - componentName: zk-component
+      parameterValues:
+        - name: name
+          value: ghostbaby
+      traits:
+        - trait:
+            apiVersion: core.oam.dev/v1alpha2
+            kind: ManualScalerTrait
+            metadata:
+              name: zk-appconfig-trait
+            spec:
+              replicaCount: 3

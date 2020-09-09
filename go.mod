@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/anacrolix/log v0.7.0 // indirect
+	github.com/crossplane/crossplane-runtime v0.9.0
 	github.com/go-logr/logr v0.2.1-0.20200730175230-ee2de8da5be6
 	github.com/goharbor/harbor-cluster-operator v0.0.0-20200826142937-2341da8ea99e // indirect
 	github.com/googleapis/gnostic v0.4.1
