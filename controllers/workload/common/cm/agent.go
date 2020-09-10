@@ -4,9 +4,8 @@ const (
 	AgentConfigKey = "config.json"
 )
 
-func GenZkAgentConfig() (string, error) {
-	var config string
-	config = `{
+func GenZkAgentConfig() string {
+	return `{
     "debug": true,
     "zkHost": "127.0.0.1",
     "zkPort": "2181",
@@ -16,5 +15,4 @@ func GenZkAgentConfig() (string, error) {
         "backdoor": true
     }
 }`
-	return config, nil
 }

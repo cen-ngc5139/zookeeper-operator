@@ -44,5 +44,9 @@ func (w *ReconcileWorkload) Reconcile() error {
 	if err := w.ScaleWorkload(w.CTX, w.Workload, option).Reconcile(); err != nil {
 		return err
 	}
+
+	if err := w.RolloutWorkload(w.CTX, w.Workload, option).Reconcile(); err != nil {
+		return err
+	}
 	return nil
 }

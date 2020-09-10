@@ -55,15 +55,15 @@ func (p *Provision) Observer() error {
 
 	podArray := podList.Items
 
-	deletingPods := make([]corev1.Pod, 0)
+	//deletingPods := make([]corev1.Pod, 0)
 	currentPods := make([]corev1.Pod, 0, len(podArray))
 	currentPodsByPhase := make(map[corev1.PodPhase][]corev1.Pod)
 
 	for _, p := range podArray {
-		if p.DeletionTimestamp != nil {
-			deletingPods = append(deletingPods, p)
-			continue
-		}
+		//if p.DeletionTimestamp != nil {
+		//	deletingPods = append(deletingPods, p)
+		//	continue
+		//}
 		currentPods = append(currentPods, p)
 		podsInPhase, ok := currentPodsByPhase[p.Status.Phase]
 		if !ok {
@@ -108,9 +108,7 @@ func (p *Provision) Observer() error {
 	p.ObservedState = &state
 	p.ZKClient = cli
 
-	p.writeStatus()
-
-	return nil
+	return p.writeStatus()
 }
 
 func (p *Provision) writeStatus() error {

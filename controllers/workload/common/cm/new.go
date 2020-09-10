@@ -21,10 +21,7 @@ func (c *CM) GenerateConfigMap() ([]*corev1.ConfigMap, error) {
 	var list []*ZkConfigMap
 
 	//生成agent启动配置文件
-	agent, err := GenZkAgentConfig()
-	if err != nil {
-		return nil, err
-	}
+	agent := GenZkAgentConfig()
 
 	agentData := map[string]string{
 		AgentConfigKey: agent,
@@ -51,10 +48,7 @@ func (c *CM) GenerateConfigMap() ([]*corev1.ConfigMap, error) {
 	})
 
 	//生成zookeeper启动配置文件
-	config, err := GenZkConfig()
-	if err != nil {
-		return nil, err
-	}
+	config := GenZkConfig()
 
 	configData := map[string]string{
 		ConfigFileName: config,

@@ -9,9 +9,8 @@ func PodName(ssetName string, ordinal int32) string {
 	return fmt.Sprintf("%s-%d", ssetName, ordinal)
 }
 
-func GenZkConfig() (string, error) {
-	var config string
-	config = `tickTime=2000
+func GenZkConfig() string {
+	return `tickTime=2000
 initLimit=10
 skipACL=yes
 syncLimit=5
@@ -25,5 +24,4 @@ autopurge.purgeInterval=24
 4lw.commands.whitelist=cons, envi, conf, crst, srvr, stat, mntr, ruok
 dynamicConfigFile=/conf/zoo.cfg.dynamic
 `
-	return config, nil
 }

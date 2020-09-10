@@ -5,8 +5,14 @@ import (
 	"strconv"
 	"strings"
 
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+
 	cachev1alpha1 "github.com/ghostbaby/zookeeper-operator/api/v1alpha1"
 
+	"github.com/ghostbaby/zookeeper-operator/controllers/k8s"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/volume"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/model"
 	appsv1 "k8s.io/api/apps/v1"
@@ -324,4 +330,36 @@ func (r *STS) CreateAgentContainer(vm corev1.VolumeMount) corev1.Container {
 
 func genConfigMapName(name, cmType string) string {
 	return fmt.Sprintf("%s-%s", name, cmType)
+}
+
+func GetStatefulSet(c k8s.Client, w *cachev1alpha1.Workload, label map[string]string, scheme *runtime.Scheme,
+) (*appsv1.StatefulSet, *appsv1.StatefulSet, error) {
+
+	var (
+		expectSts *appsv1.StatefulSet
+		actualSts *appsv1.StatefulSet
+	)
+
+	actual := &appsv1.StatefulSet{}
+	name := w.Name
+	namespace := w.Namespace
+	newSts := NewSTS(w, label)
+	expect, err := newSts.GenerateStatefulset()
+	if err != nil {
+		return nil, nil, err
+	}
+	if err := controllerutil.SetControllerReference(w, expect, scheme); err != nil {
+		return nil, nil, err
+	}
+
+	if err := c.Get(types.NamespacedName{Name: name, Namespace: namespace}, actual); err != nil && errors.IsNotFound(err) {
+		expectSts = expect
+	} else if err != nil {
+		return nil, nil, err
+	} else {
+		expectSts = expect
+		actualSts = actual
+	}
+
+	return expectSts, actualSts, nil
 }
