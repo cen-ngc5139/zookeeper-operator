@@ -45,14 +45,8 @@ func (s *STS) GenerateStatefulset() (*appsv1.StatefulSet, error) {
 	}
 	containerDefaultVM := BuildDefaultVolumes()
 
-	for _, vm := range containerDefaultVM {
-		volumeMount = append(volumeMount, vm)
-	}
-
-	for _, volume := range cm.PluginVolumes.Volumes() {
-		volumes = append(volumes, volume)
-	}
-
+	volumeMount = append(volumeMount, containerDefaultVM...)
+	volumes = append(volumes, cm.PluginVolumes.Volumes()...)
 	volumes = append(volumes, volume.DefaultLogsVolume)
 
 	//生成初始化脚本存储卷

@@ -63,8 +63,7 @@ func (s *Scale) ReConfig() error {
 	}
 
 	//获取实际 zk config内容
-	ctx, cancel := context.WithCancel(context.Background())
-	timeoutCtx, cancel := context.WithTimeout(ctx, observer.DefaultSettings.RequestTimeout)
+	timeoutCtx, cancel := context.WithTimeout(context.Background(), observer.DefaultSettings.RequestTimeout)
 	defer cancel()
 	var config AddMember
 	if err := cli.Get(timeoutCtx, "/get", &config); err != nil {
@@ -114,8 +113,7 @@ func (s *Scale) ReConfig() error {
 		member := &AddMember{
 			Record: record,
 		}
-		ctx, cancel := context.WithCancel(context.Background())
-		timeoutCtx, cancel := context.WithTimeout(ctx, observer.DefaultSettings.RequestTimeout)
+		timeoutCtx, cancel := context.WithTimeout(context.Background(), observer.DefaultSettings.RequestTimeout)
 		defer cancel()
 
 		var result zkcli.Stat
@@ -137,8 +135,7 @@ func (s *Scale) ReConfig() error {
 		member := &AddMember{
 			Record: record,
 		}
-		ctx, cancel := context.WithCancel(context.Background())
-		timeoutCtx, cancel := context.WithTimeout(ctx, observer.DefaultSettings.RequestTimeout)
+		timeoutCtx, cancel := context.WithTimeout(context.Background(), observer.DefaultSettings.RequestTimeout)
 		defer cancel()
 
 		var result zkcli.Stat

@@ -36,7 +36,7 @@ func getDomain(rf *cachev1alpha1.Workload) string {
 }
 
 func getSvcName(rf *cachev1alpha1.Workload) string {
-	return fmt.Sprintf("%s", rf.GetName())
+	return rf.GetName()
 }
 
 func PodNames(sset appsv1.StatefulSet) []string {
@@ -55,11 +55,7 @@ func GetReplicas(sts appsv1.StatefulSet) int32 {
 }
 
 func GetByName(ssetName string, expectName string) bool {
-	if expectName == ssetName {
-		return true
-	}
-
-	return false
+	return expectName == ssetName
 }
 
 // ExtractNamespacedName returns an NamespacedName based on the given Object.

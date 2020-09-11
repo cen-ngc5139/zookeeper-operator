@@ -9,6 +9,26 @@ on:
       - master
 
 jobs:
+  docker-lint:
+    runs-on: ubuntu-latest
+    name: DockerLint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: lint
+        uses: brpaz/hadolint-action@master
+
+  # Golang tests
+  go-lint:
+    runs-on: ubuntu-latest
+    name: GoLint
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run golangci-lint
+        uses: actions-contrib/golangci-lint@v1
+        with:
+          golangci_lint_version: 1.22.2
+
   # Dockerfile tests
   docker-build-test:
     runs-on: ubuntu-latest

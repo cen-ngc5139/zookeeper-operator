@@ -140,14 +140,14 @@ func RetrieveState(ctx context.Context, cluster types.NamespacedName, zkClient z
 
 		for _, endpoint := range zkClient.Endpoints {
 
-			ctx, cancel := context.WithCancel(context.Background())
-			timeoutCtx, cancel := context.WithTimeout(ctx, DefaultSettings.RequestTimeout)
-			defer cancel()
+			//ctx, cancel := context.WithCancel(context.Background())
+			//timeoutCtx, cancel := context.WithTimeout(ctx, DefaultSettings.RequestTimeout)
+			//defer cancel()
 			if zkClient.Endpoint != endpoint {
 				zkClient.Endpoint = endpoint
 			}
 
-			clusterState, err := zkClient.GetClusterStatus(timeoutCtx)
+			clusterState, err := zkClient.GetClusterStatus(ctx)
 			if err != nil {
 				// This is expected to happen from time to time
 				log.Info("Unable to retrieve cluster state", "error", err, "namespace", cluster.Namespace, "zk_name", cluster.Name)
@@ -155,7 +155,7 @@ func RetrieveState(ctx context.Context, cluster types.NamespacedName, zkClient z
 				continue
 			}
 
-			up, err := zkClient.GetClusterUp(timeoutCtx)
+			up, err := zkClient.GetClusterUp(ctx)
 			if err != nil {
 				// This is expected to happen from time to time
 				log.Info("Unable to retrieve cluster state", "error", err, "namespace", cluster.Namespace, "zk_name", cluster.Name)

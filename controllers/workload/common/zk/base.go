@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -109,16 +108,8 @@ func (c *BaseClient) IsAlive(c2 *BaseClient) bool {
 		return false
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	timeoutCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+	timeoutCtx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	up, err := c.GetClusterUp(timeoutCtx)
-	if err != nil {
-		return false
-	}
-
-	fmt.Println(up)
-
-	// compare endpoint and user creds
-	return true
+	_, err := c.GetClusterUp(timeoutCtx)
+	return err == nil
 }

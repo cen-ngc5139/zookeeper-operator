@@ -3,6 +3,8 @@ package workload
 import (
 	"context"
 
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/rollout"
+
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/scale"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -31,6 +33,9 @@ type Getter interface {
 
 	// For Scale
 	ScaleWorkload(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler
+
+	// For Rollout
+	RolloutWorkload(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler
 }
 
 type GetOptions struct {
@@ -84,6 +89,17 @@ func (impl *GetterImpl) ProvisionWorkload(ctx context.Context, workload *cachev1
 
 func (impl *GetterImpl) ScaleWorkload(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler {
 	return &scale.Scale{
+		Workload: workload,
+		Client:   options.Client,
+		Recorder: options.Recorder,
+		Log:      options.Log,
+		Labels:   options.Labels,
+		Scheme:   options.Scheme,
+	}
+}
+
+func (impl *GetterImpl) RolloutWorkload(ctx context.Context, workload *cachev1alpha1.Workload, options *GetOptions) Reconciler {
+	return &rollout.Rollout{
 		Workload: workload,
 		Client:   options.Client,
 		Recorder: options.Recorder,

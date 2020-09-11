@@ -61,7 +61,7 @@ func getStsResource(sts *appsv1.StatefulSet) *cachev1alpha1.ZkResource {
 	}
 }
 
-func isUpgradeStsResource(expectSts *appsv1.StatefulSet, actualSts *appsv1.StatefulSet) bool {
+func IsUpgradeStsResource(expectSts *appsv1.StatefulSet, actualSts *appsv1.StatefulSet) bool {
 	expectEsResource := getStsResource(expectSts)
 	actualEsResource := getStsResource(actualSts)
 	//fmt.Println(expectEsResource, actualEsResource)
