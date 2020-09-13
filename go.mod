@@ -8,10 +8,13 @@ require (
 	github.com/go-logr/logr v0.2.1-0.20200730175230-ee2de8da5be6
 	github.com/goharbor/harbor-cluster-operator v0.0.0-20200826142937-2341da8ea99e // indirect
 	github.com/googleapis/gnostic v0.4.1
+	github.com/gorilla/mux v1.7.5-0.20200711200521-98cb6bf42e08
 	github.com/onsi/ginkgo v1.12.1
 	github.com/onsi/gomega v1.10.1
 	github.com/pkg/errors v0.9.1
 	github.com/samuel/go-zookeeper v0.0.0-20200724154423-2164a8ac840e
+	github.com/sirupsen/logrus v1.6.0
+	github.com/toolkits/file v0.0.0-20160325033739-a5b3c5147e07
 	gopkg.in/fatih/set.v0 v0.2.1
 	k8s.io/api v0.19.0
 	k8s.io/apimachinery v0.19.0
