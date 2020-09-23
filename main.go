@@ -84,6 +84,10 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "Workload")
 		os.Exit(1)
 	}
+	if err = (&cachev1alpha1.Workload{}).SetupWebhookWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create webhook", "webhook", "Workload")
+		os.Exit(1)
+	}
 	// +kubebuilder:scaffold:builder
 
 	setupLog.Info("starting manager")
