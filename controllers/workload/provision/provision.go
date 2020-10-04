@@ -3,6 +3,8 @@ package provision
 import (
 	"context"
 
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/prometheus"
+
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
 
@@ -25,6 +27,7 @@ type Provision struct {
 	Recorder      record.EventRecorder
 	Log           logr.Logger
 	Labels        map[string]string
+	Monitor       *prometheus.GenericClientset
 	Scheme        *runtime.Scheme
 	ExpectSts     *appsv1.StatefulSet
 	ActualSts     *appsv1.StatefulSet
@@ -51,7 +54,11 @@ func (p *Provision) Reconcile() error {
 		return err
 	}
 
-	if err := p.Finalizers.Handle(p.Workload, p.finalizersFor(p.Workload)...); err != nil {
+	if err := p.Finalizers.Handle(p.Workload, p.FinalizersFor(p.Workload)...); err != nil {
+		return err
+	}
+
+	if err := p.ProvisionMonitor(); err != nil {
 		return err
 	}
 
