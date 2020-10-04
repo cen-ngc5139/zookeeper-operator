@@ -6,7 +6,7 @@ import (
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/utils"
 )
 
-func (p *Provision) finalizersFor(
+func (p *Provision) FinalizersFor(
 	zk *cachev1alpha1.Workload,
 ) []finalizer.Finalizer {
 	clusterName := utils.ExtractNamespacedName(zk)

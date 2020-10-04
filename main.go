@@ -21,6 +21,7 @@ import (
 	"os"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/prometheus"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -70,6 +71,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	mcli, err := prometheus.NewRegistry(mgr)
+	if err != nil {
+		panic(err)
+	}
+
 	if err = (&controllers.WorkloadReconciler{
 		Client:        mgr.GetClient(),
 		ServiceGetter: &controllers.ServiceGetterImpl{},
@@ -78,6 +84,7 @@ func main() {
 		Scheme:        mgr.GetScheme(),
 		Observers:     observer.NewManager(observer.DefaultSettings),
 		ObservedState: &observer.State{},
+		Monitor:       mcli,
 		ZKClient:      &zk.BaseClient{},
 		Finalizers:    finalizer.NewHandler(mgr.GetClient()),
 	}).SetupWithManager(mgr); err != nil {

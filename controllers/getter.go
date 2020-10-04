@@ -3,6 +3,8 @@ package controllers
 import (
 	"context"
 
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/prometheus"
+
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
 
@@ -33,6 +35,7 @@ type GetOptions struct {
 	DClient       k8s.DClient
 	Scheme        *runtime.Scheme
 	Labels        map[string]string
+	Monitor       *prometheus.GenericClientset
 	Observers     *observer.Manager
 	ZKClient      *zk.BaseClient
 	ObservedState *observer.State
@@ -57,5 +60,6 @@ func (impl *ServiceGetterImpl) Workload(ctx context.Context, workload *cachev1al
 		ZKClient:      options.ZKClient,
 		ObservedState: options.ObservedState,
 		Finalizers:    options.Finalizers,
+		Monitor:       options.Monitor,
 	}
 }

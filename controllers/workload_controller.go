@@ -20,33 +20,26 @@ import (
 	"context"
 	"time"
 
-	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/prometheus"
 
-	"github.com/ghostbaby/zookeeper-operator/controllers/workload/provision"
-
-	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
-
-	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/observer"
-
+	cachev1alpha1 "github.com/ghostbaby/zookeeper-operator/api/v1alpha1"
 	"github.com/ghostbaby/zookeeper-operator/controllers/k8s"
-
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/observer"
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/model"
-
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/provision"
+	"github.com/go-logr/logr"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/record"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
-
-	"k8s.io/client-go/tools/record"
-
-	"github.com/go-logr/logr"
-	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	cachev1alpha1 "github.com/ghostbaby/zookeeper-operator/api/v1alpha1"
 )
 
 // WorkloadReconciler reconciles a Workload object
@@ -57,6 +50,7 @@ type WorkloadReconciler struct {
 	Scheme        *runtime.Scheme
 	Recorder      record.EventRecorder
 	Observers     *observer.Manager
+	Monitor       *prometheus.GenericClientset
 	ZKClient      *zk.BaseClient
 	ObservedState *observer.State
 	Finalizers    finalizer.Handler
@@ -109,6 +103,7 @@ func (r *WorkloadReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		ZKClient:      r.ZKClient,
 		ObservedState: r.ObservedState,
 		Finalizers:    r.Finalizers,
+		Monitor:       r.Monitor,
 	}
 
 	if err := r.Workload(ctx, &workload, option).Reconcile(); err != nil {

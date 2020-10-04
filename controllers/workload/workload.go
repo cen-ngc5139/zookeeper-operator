@@ -3,6 +3,8 @@ package workload
 import (
 	"context"
 
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/prometheus"
+
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/finalizer"
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/zk"
 
@@ -27,6 +29,7 @@ type ReconcileWorkload struct {
 	DClient       k8s.DClient
 	Scheme        *runtime.Scheme
 	Observers     *observer.Manager
+	Monitor       *prometheus.GenericClientset
 	Labels        map[string]string
 	ZKClient      *zk.BaseClient
 	ObservedState *observer.State

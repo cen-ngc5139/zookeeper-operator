@@ -3,6 +3,8 @@ package workload
 import (
 	"context"
 
+	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/prometheus"
+
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/rollout"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/scale"
@@ -48,6 +50,7 @@ type GetOptions struct {
 	Observers     *observer.Manager
 	ZKClient      *zk.BaseClient
 	ObservedState *observer.State
+	Monitor       *prometheus.GenericClientset
 	Finalizers    finalizer.Handler
 	ExpectSts     *appsv1.StatefulSet
 	ActualSts     *appsv1.StatefulSet
@@ -68,6 +71,7 @@ func (w *ReconcileWorkload) GetOptions() *GetOptions {
 		ZKClient:      w.ZKClient,
 		ObservedState: w.ObservedState,
 		Finalizers:    w.Finalizers,
+		Monitor:       w.Monitor,
 	}
 }
 
@@ -84,6 +88,7 @@ func (impl *GetterImpl) ProvisionWorkload(ctx context.Context, workload *cachev1
 		ZKClient:      options.ZKClient,
 		ObservedState: options.ObservedState,
 		Finalizers:    options.Finalizers,
+		Monitor:       options.Monitor,
 	}
 }
 
