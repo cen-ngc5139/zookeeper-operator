@@ -34,8 +34,8 @@ func (m *Manager) Observe(cluster types.NamespacedName, zkClient zk.BaseClient) 
 	switch {
 	case !exists:
 		return m.createObserver(cluster, zkClient)
-	case exists && !observer.zkClient.Equal(&zkClient):
-		//case exists && !observer.zkClient.IsAlive(&zkClient):
+		//case exists && !observer.zkClient.Equal(&zkClient):
+	case exists && !observer.zkClient.IsAlive(&zkClient):
 		log.Info("Replacing observer HTTP client", "namespace", cluster.Namespace, "zk_name", cluster.Name)
 		m.StopObserving(cluster)
 		return m.createObserver(cluster, zkClient)

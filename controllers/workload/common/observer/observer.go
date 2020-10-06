@@ -158,7 +158,7 @@ func RetrieveState(ctx context.Context, cluster types.NamespacedName, zkClient z
 			up, err := zkClient.GetClusterUp(ctx)
 			if err != nil {
 				// This is expected to happen from time to time
-				log.Info("Unable to retrieve cluster state", "error", err, "namespace", cluster.Namespace, "zk_name", cluster.Name)
+				log.Info("Unable to retrieve cluster whether to up", "error", err, "namespace", cluster.Namespace, "zk_name", cluster.Name)
 				clusterStateChan <- nil
 				continue
 			}
