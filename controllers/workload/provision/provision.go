@@ -53,9 +53,9 @@ func (p *Provision) Reconcile() error {
 			return err
 		}
 
-		//if err := p.ProvisionMonitor(); err != nil {
-		//	return err
-		//}
+		if err := p.ProvisionMonitor(); err != nil {
+			return err
+		}
 
 		if err := p.Observer(); err != nil {
 			return err

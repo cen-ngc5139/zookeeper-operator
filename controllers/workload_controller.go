@@ -18,7 +18,10 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"time"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/ghostbaby/zookeeper-operator/controllers/workload/common/prometheus"
 
@@ -81,10 +84,14 @@ func (r *WorkloadReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		return ReconcileWaitResult, client.IgnoreNotFound(err)
 	}
 
-	//// workload will be gracefully deleted by server when DeletionTimestamp is non-null
-	//if workload.DeletionTimestamp != nil {
-	//	return ReconcileWaitResult, nil
-	//}
+	defer func() {
+		updateObservedGeneration(&workload)
+		if err := r.Client.Status().Update(ctx, &workload); err != nil {
+			log.Error(err, "fail to update workload status")
+			return
+		}
+		log.Info(fmt.Sprintf("success to update workload status, ObservedGeneration: %d", workload.Status.ObservedGeneration))
+	}()
 
 	dClient, err := k8s.NewDynamicClient()
 	if err != nil {
@@ -139,4 +146,12 @@ func (r *WorkloadReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Watches(&source.Kind{Type: &corev1.Pod{}}, &handler.EnqueueRequestsFromMapFunc{ToRequests: mapFn}).
 		Watches(observer.WatchClusterHealthChange(r.Observers), provision.GenericEventHandler()).
 		Complete(r)
+}
+
+func updateObservedGeneration(w *cachev1alpha1.Workload) {
+	if w.Status.ObservedGeneration != w.Generation {
+		w.Status.ObservedGeneration = w.Generation
+	}
+
+	w.Status.LastTransitionTime = metav1.Now()
 }

@@ -1089,6 +1089,10 @@ spec:
               type: string
             leaderNode:
               type: string
+            observedGeneration:
+              description: The generation observed by the appConfig controller.
+              format: int64
+              type: integer
             phase:
               type: string
           type: object

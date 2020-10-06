@@ -102,11 +102,16 @@ func (p *Provision) Observer() error {
 	if state.ClusterStats != nil {
 		p.Workload.Status.LeaderNode = state.ClusterStats.LeaderNode
 		p.Workload.Status.AvailableNodes = state.ClusterStats.AvailableNodes
-		p.Workload.Status.LastTransitionTime = metav1.Now()
 	}
+
+	p.Workload.Status.LastTransitionTime = metav1.Now()
 
 	p.ObservedState = &state
 	p.ZKClient = cli
+
+	if p.Workload.Status.ObservedGeneration != p.Workload.Generation {
+		p.Workload.Status.ObservedGeneration = p.Workload.Generation
+	}
 
 	return p.writeStatus()
 }
