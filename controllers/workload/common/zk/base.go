@@ -110,6 +110,6 @@ func (c *BaseClient) IsAlive(c2 *BaseClient) bool {
 
 	timeoutCtx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	_, err := c.GetClusterUp(timeoutCtx)
-	return err == nil
+	ok, _ := c.GetClusterUp(timeoutCtx)
+	return ok
 }
