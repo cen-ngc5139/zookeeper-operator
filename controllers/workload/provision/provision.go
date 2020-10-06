@@ -38,27 +38,31 @@ type Provision struct {
 }
 
 func (p *Provision) Reconcile() error {
-	if err := p.ProvisionStatefulset(); err != nil {
-		return err
-	}
 
-	if err := p.ProvisionConfigMap(); err != nil {
-		return err
-	}
+	if p.Workload.GetDeletionTimestamp().IsZero() {
 
-	if err := p.ProvisionService(); err != nil {
-		return err
-	}
+		if err := p.ProvisionStatefulset(); err != nil {
+			return err
+		}
 
-	if err := p.Observer(); err != nil {
-		return err
+		if err := p.ProvisionConfigMap(); err != nil {
+			return err
+		}
+
+		if err := p.ProvisionService(); err != nil {
+			return err
+		}
+
+		//if err := p.ProvisionMonitor(); err != nil {
+		//	return err
+		//}
+
+		if err := p.Observer(); err != nil {
+			return err
+		}
 	}
 
 	if err := p.Finalizers.Handle(p.Workload, p.FinalizersFor(p.Workload)...); err != nil {
-		return err
-	}
-
-	if err := p.ProvisionMonitor(); err != nil {
 		return err
 	}
 
