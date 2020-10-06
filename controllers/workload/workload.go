@@ -44,6 +44,10 @@ func (w *ReconcileWorkload) Reconcile() error {
 		return err
 	}
 
+	if !w.Workload.GetDeletionTimestamp().IsZero() {
+		return nil
+	}
+
 	if err := w.ScaleWorkload(w.CTX, w.Workload, option).Reconcile(); err != nil {
 		return err
 	}
