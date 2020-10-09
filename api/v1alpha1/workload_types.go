@@ -145,6 +145,10 @@ type WorkloadStatus struct {
 	LastTransitionTime metav1.Time `json:"lastTransitionTime,omitempty"`
 
 	Phase ZooKeeperOrchestrationPhase `json:"phase,omitempty"`
+
+	// The generation observed by the appConfig controller.
+	// +optional
+	ObservedGeneration int64 `json:"observedGeneration"`
 }
 
 // MembersStatus is the status of the members of the cluster with both
