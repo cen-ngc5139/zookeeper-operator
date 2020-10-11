@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - '**'
+    - '**'
   pull_request:
 
 jobs:
@@ -11,17 +11,182 @@ jobs:
     runs-on: ubuntu-latest
     name: DockerLint
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: lint
-        uses: brpaz/hadolint-action@master
-  golangci:
-    name: lint
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: lint
+      uses: brpaz/hadolint-action@master
+
+  # Golang tests
+  go-lint:
     runs-on: ubuntu-latest
+    name: GoLint
     steps:
-      - uses: actions/checkout@v2
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
-          version: v1.29
+    - uses: actions/checkout@v2
+    - name: Run golangci-lint
+      uses: actions-contrib/golangci-lint@v1
+      with:
+        golangci_lint_version: 1.23
+        args: run -v --timeout 300s
+
+  go-tests:
+    runs-on: ubuntu-latest
+    name: go tests
+
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: make test
+      run: |
+        go env
+        test -d /usr/local/kubebuilder || (curl -sSL "https://go.kubebuilder.io/dl/2.0.1/$(go env GOOS)/$(go env GOARCH)" | tar -xz -C /tmp/;sudo mv /tmp/kubebuilder_2.0.1_$(go env GOOS)_$(go env GOARCH) /usr/local/kubebuilder)
+        make test
+
+  k8s-tests:
+    runs-on: ubuntu-latest
+    name: K8S v${{ matrix.k8sVersion }} (CM v${{ matrix.certManager }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # https://github.com/jetstack/cert-manager/tags
+        certManager: ["0.15.2", "0.16.1"]
+        # https://snapcraft.io/microk8s
+        k8sVersion: ["1.17", "1.18", "1.19"]
+
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+
+    - name: Install Kubernetes v${{ matrix.k8sVersion }}
+      run: |
+        which kind || (curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-$(uname)-amd64; sudo install kind /usr/local/bin/)
+        test -d /usr/local/kubebuilder || (curl -sSL "https://go.kubebuilder.io/dl/2.0.1/$(go env GOOS)/$(go env GOARCH)" | tar -xz -C /tmp/;sudo mv /tmp/kubebuilder_2.0.1_$(go env GOOS)_$(go env GOARCH) /usr/local/kubebuilder)
+        cat <<EOF | kind create cluster --name zookeeper --config=-
+        kind: Cluster
+        apiVersion: kind.x-k8s.io/v1alpha4
+        nodes:
+        - role: control-plane
+        - role: worker
+        - role: worker
+        - role: worker
+        EOF
+
+    - uses: actions/checkout@v2
+
+    - name: Install CertManager v${{ matrix.certManager }}
+      run: |
+        # Try the recet way to install crd or fallback to the old one
+        version='${{ matrix.certManager }}'
+        kubectl apply -f "https://github.com/jetstack/cert-manager/releases/download/v${version}/cert-manager.yaml"
+        sleep 5
+        kubectl -n cert-manager wait --for=condition=Available deployment --all --timeout 300s
+
+    - name: Install Ingress
+      run: |
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.35.0/deploy/static/provider/baremetal/deploy.yaml
+        sleep 5
+        kubectl -n ingress-nginx wait --for=condition=Available deployment --all --timeout 300s
+
+    - name: Install zookeeper-operator
+      run: |
+        set -xe
+        make docker-build
+        make install
+        make deploy
+        sleep 10
+        kubectl -n zookeeper-operator-system wait --for=condition=Available deployment --all --timeout 300s
+        kubectl get all -n zookeeper-operator-system
+
+    - name: Install zookeeper
+      run: |
+        set -xe
+        IP=`hostname -I | awk '{print $1}'`
+        echo "::set-env name=IP::$IP"
+
+        cat <<EOF | apiVersion: core.oam.dev/v1alpha2
+        kind: WorkloadDefinition
+        metadata:
+          name: workloads.cache.ghostbaby.io
+        spec:
+          definitionRef:
+            name: workloads.cache.ghostbaby.io
+        ---
+        # create zookeeper component.
+        apiVersion: core.oam.dev/v1alpha2
+        kind: Component
+        metadata:
+         name: zk-component
+        spec:
+         workload:
+           apiVersion: cache.ghostbaby.io/v1alpha1
+           kind: Workload
+           spec:
+             version: v3.5.6
+             cluster:
+               name: test
+               resources:
+                 requests:
+                   cpu: 100m
+                   memory: 500Mi
+               exporter:
+                 exporter: true
+                 exporterImage: ghostbaby/zookeeper_exporter
+                 exporterVersion: v3.5.6
+                 disableExporterProbes: false
+         parameters:
+           - name: name
+             fieldPaths:
+               - metadata.name
+        ---
+        # provision zookeeper appConfig.
+        apiVersion: core.oam.dev/v1alpha2
+        kind: ApplicationConfiguration
+        metadata:
+          name: zk-appconfig
+        spec:
+          components:
+            - componentName: zk-component
+              parameterValues:
+                - name: name
+                  value: ghostbaby
+              traits:
+                - trait:
+                    apiVersion: core.oam.dev/v1alpha2
+                    kind: ManualScalerTrait
+                    metadata:
+                      name: zk-appconfig-trait
+                    spec:
+                      replicaCount: 3
+        EOF
+
+        free -h
+        # currently we don't have a good way to wait install done
+        for i in $(seq 1 6);do
+          sleep 30
+          echo $i
+          kubectl get all
+        done
+        if ! kubectl wait --for=condition=Ready pod --all --timeout 600s ;then
+          echo install zookeeper failed
+          kubectl get all
+
+          for n in $(kubectl get po |grep -v Running|grep 'ghostbaby'|awk '{print $1}');do
+            echo describe $n
+            kubectl describe pod $n
+          done
+        else
+          kubectl get all
+        fi
