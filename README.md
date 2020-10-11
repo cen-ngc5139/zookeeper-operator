@@ -77,4 +77,4 @@ See documents [here](./docs).
 
 ## License
 
-[Apache-2.0](https://github.com/goharbor/harbor-cluster-operator/blob/master/LICENSE)
+[Apache-2.0](https://github.com/Ghostbaby/zookeeper-operator/blob/master/LICENSE)
