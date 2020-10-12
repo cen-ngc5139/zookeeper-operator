@@ -36,7 +36,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v1
       with:
-        go-version: 1.13
+        go-version: 1.14
 
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
@@ -49,7 +49,7 @@ jobs:
     - name: make test
       run: |
         go env
-        test -d /usr/local/kubebuilder || (curl -sSL "https://go.kubebuilder.io/dl/2.0.1/$(go env GOOS)/$(go env GOARCH)" | tar -xz -C /tmp/;sudo mv /tmp/kubebuilder_2.0.1_$(go env GOOS)_$(go env GOARCH) /usr/local/kubebuilder)
+        test -d /usr/local/kubebuilder || (curl -sSL "https://go.kubebuilder.io/dl/2.3.1/$(go env GOOS)/$(go env GOARCH)" | tar -xz -C /tmp/;sudo mv /tmp/kubebuilder_2.3.1_$(go env GOOS)_$(go env GOARCH) /usr/local/kubebuilder)
         make test
 
   k8s-tests:
@@ -60,20 +60,22 @@ jobs:
       fail-fast: false
       matrix:
         # https://github.com/jetstack/cert-manager/tags
-        certManager: ["0.15.2", "0.16.1"]
+        #certManager: ["0.15.2", "0.16.1"]
+        certManager: ["0.16.1"]
         # https://snapcraft.io/microk8s
-        k8sVersion: ["1.17", "1.18", "1.19"]
+        #k8sVersion: ["1.17", "1.18", "1.19"]
+        k8sVersion: ["1.19"]
 
     steps:
     - name: Set up Go
       uses: actions/setup-go@v1
       with:
-        go-version: 1.13
+        go-version: 1.14
 
     - name: Install Kubernetes v${{ matrix.k8sVersion }}
       run: |
         which kind || (curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-$(uname)-amd64; sudo install kind /usr/local/bin/)
-        test -d /usr/local/kubebuilder || (curl -sSL "https://go.kubebuilder.io/dl/2.0.1/$(go env GOOS)/$(go env GOARCH)" | tar -xz -C /tmp/;sudo mv /tmp/kubebuilder_2.0.1_$(go env GOOS)_$(go env GOARCH) /usr/local/kubebuilder)
+        test -d /usr/local/kubebuilder || (curl -sSL "https://go.kubebuilder.io/dl/2.3.1/$(go env GOOS)/$(go env GOARCH)" | tar -xz -C /tmp/;sudo mv /tmp/kubebuilder_2.3.1_$(go env GOOS)_$(go env GOARCH) /usr/local/kubebuilder)
         cat <<EOF | kind create cluster --name zookeeper --config=-
         kind: Cluster
         apiVersion: kind.x-k8s.io/v1alpha4
@@ -103,90 +105,63 @@ jobs:
     - name: Install zookeeper-operator
       run: |
         set -xe
-        make docker-build
         make install
         make deploy
         sleep 10
         kubectl -n zookeeper-operator-system wait --for=condition=Available deployment --all --timeout 300s
         kubectl get all -n zookeeper-operator-system
 
+#     - name: Install oam-kubernetes-runtime
+#       run: |
+#         curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+#         kubectl create namespace oam-system
+#         helm repo add crossplane-master https://charts.crossplane.io/master/
+#         helm install oam --namespace oam-system crossplane-master/oam-kubernetes-runtime --devel
+
     - name: Install zookeeper
       run: |
-        set -xe
-        IP=`hostname -I | awk '{print $1}'`
-        echo "::set-env name=IP::$IP"
-
-        cat <<EOF | apiVersion: core.oam.dev/v1alpha2
-        kind: WorkloadDefinition
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Namespace
         metadata:
-          name: workloads.cache.ghostbaby.io
-        spec:
-          definitionRef:
-            name: workloads.cache.ghostbaby.io
+          name: pg
         ---
-        # create zookeeper component.
-        apiVersion: core.oam.dev/v1alpha2
-        kind: Component
+        apiVersion: cache.ghostbaby.io/v1alpha1
+        kind: Workload
         metadata:
-         name: zk-component
+          name: workload-sample
+          namespace: pg
         spec:
-         workload:
-           apiVersion: cache.ghostbaby.io/v1alpha1
-           kind: Workload
-           spec:
-             version: v3.5.6
-             cluster:
-               name: test
-               resources:
-                 requests:
-                   cpu: 100m
-                   memory: 500Mi
-               exporter:
-                 exporter: true
-                 exporterImage: ghostbaby/zookeeper_exporter
-                 exporterVersion: v3.5.6
-                 disableExporterProbes: false
-         parameters:
-           - name: name
-             fieldPaths:
-               - metadata.name
-        ---
-        # provision zookeeper appConfig.
-        apiVersion: core.oam.dev/v1alpha2
-        kind: ApplicationConfiguration
-        metadata:
-          name: zk-appconfig
-        spec:
-          components:
-            - componentName: zk-component
-              parameterValues:
-                - name: name
-                  value: ghostbaby
-              traits:
-                - trait:
-                    apiVersion: core.oam.dev/v1alpha2
-                    kind: ManualScalerTrait
-                    metadata:
-                      name: zk-appconfig-trait
-                    spec:
-                      replicaCount: 3
+          version: v3.5.6
+          replicas: 3
+          cluster:
+            name: test
+            resources:
+              requests:
+                cpu: 100m
+                memory: 0.5Gi
+            exporter:
+              exporter: true
+              exporterImage: ghostbaby/zookeeper_exporter
+              exporterVersion: v3.5.6
+              disableExporterProbes: false
         EOF
-
         free -h
         # currently we don't have a good way to wait install done
         for i in $(seq 1 6);do
           sleep 30
           echo $i
-          kubectl get all
+          kubectl get zk -n pg
+          kubectl get pods -n pg
         done
-        if ! kubectl wait --for=condition=Ready pod --all --timeout 600s ;then
+        if ! kubectl -n pg wait --for=condition=Ready pod --all --timeout 600s ;then
           echo install zookeeper failed
-          kubectl get all
+          kubectl get zk -n pg
 
-          for n in $(kubectl get po |grep -v Running|grep 'ghostbaby'|awk '{print $1}');do
+          for n in $(kubectl get -n pg po |grep -v Running|grep 'workload-sample'|awk '{print $1}');do
             echo describe $n
-            kubectl describe pod $n
+            kubectl -n pg describe pod $n
           done
         else
-          kubectl get all
+          kubectl get zk -n pg
         fi
