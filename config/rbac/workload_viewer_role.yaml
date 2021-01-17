@@ -5,7 +5,7 @@ metadata:
   name: workload-viewer-role
 rules:
 - apiGroups:
-  - cache.ghostbaby.io
+  - zk.cache.ghostbaby.io
   resources:
   - workloads
   verbs:
@@ -13,7 +13,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - cache.ghostbaby.io
+  - zk.cache.ghostbaby.io
   resources:
   - workloads/status
   verbs:

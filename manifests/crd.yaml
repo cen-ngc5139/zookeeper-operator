@@ -4,7 +4,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.2.4
   creationTimestamp: null
-  name: workloads.cache.ghostbaby.io
+  name: workloads.zk.cache.ghostbaby.io
 spec:
   additionalPrinterColumns:
   - JSONPath: .status.leaderNode
@@ -18,7 +18,7 @@ spec:
     description: ZooKeeper version
     name: version
     type: string
-  group: cache.ghostbaby.io
+  group: zk.cache.ghostbaby.io
   names:
     kind: Workload
     listKind: WorkloadList

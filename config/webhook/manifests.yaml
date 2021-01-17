@@ -11,7 +11,7 @@ webhooks:
     service:
       name: webhook-service
       namespace: system
-      path: /mutate-cache-ghostbaby-io-v1alpha1-workload
+      path: /mutate-zk-cache-ghostbaby-io-v1alpha1-workload
   failurePolicy: Fail
   name: mworkload.kb.io
   rules:
@@ -37,7 +37,7 @@ webhooks:
     service:
       name: webhook-service
       namespace: system
-      path: /validate-cache-ghostbaby-io-v1alpha1-workload
+      path: /validate-zk-cache-ghostbaby-io-v1alpha1-workload
   failurePolicy: Fail
   name: vworkload.kb.io
   rules:

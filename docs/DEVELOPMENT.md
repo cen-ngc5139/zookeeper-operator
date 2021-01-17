@@ -37,7 +37,7 @@ For example, use the following command to create an zookeeper cluster.
 $ cd ./config/samples
 
 $ kubectl apply -f cache_v1alpha1_workload.yaml
-workload.cache.ghostbaby.io/workload-sample created
+workload.zk.cache.ghostbaby.io/workload-sample created
 
 $ kubectl get pods -n pg
 workload-sample-0                   3/3     Running   0          3m

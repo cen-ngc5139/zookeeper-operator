@@ -13,7 +13,7 @@ It is built using the [Kubebuilder SDK](https://kubebuilder.io/), which is part 
 ## CRD
 Operator设计第一步是定义声明式接口的Item，spec主要包含节点资源、监控组件、副本数、持久化存储。
 ```yaml
-apiVersion: cache.ghostbaby.io/v1alpha1
+apiVersion: zk.cache.ghostbaby.io/v1alpha1
 kind: Workload
 metadata:
   name: workload-sample
