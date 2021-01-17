@@ -22,7 +22,6 @@ jobs:
         sudo mv /tmp/kubebuilder_2.3.1_linux_amd64 /usr/local/kubebuilder
     - run: make test docker-build
     - name: Docker Build & Push to Docker Hub
-      if: ${{ github.ref == 'refs/heads/master' }}
       uses: opspresso/action-docker@master
       with:
         args: --docker
