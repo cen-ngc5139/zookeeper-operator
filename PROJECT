@@ -1,7 +1,7 @@
 domain: ghostbaby.io
 repo: github.com/ghostbaby/zookeeper-operator
 resources:
-- group: cache
+- group: zk.cache
   kind: Workload
   version: v1alpha1
 version: "2"
