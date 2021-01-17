@@ -5,7 +5,7 @@ metadata:
   name: workload-editor-role
 rules:
 - apiGroups:
-  - cache.ghostbaby.io
+  - zk.cache.ghostbaby.io
   resources:
   - workloads
   verbs:
@@ -17,7 +17,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - cache.ghostbaby.io
+  - zk.cache.ghostbaby.io
   resources:
   - workloads/status
   verbs:

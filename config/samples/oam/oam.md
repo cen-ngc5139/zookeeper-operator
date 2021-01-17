@@ -19,10 +19,10 @@
 apiVersion: core.oam.dev/v1alpha2
 kind: WorkloadDefinition
 metadata:
-  name: workloads.cache.ghostbaby.io
+  name: workloads.zk.cache.ghostbaby.io
 spec:
   definitionRef:
-    name: workloads.cache.ghostbaby.io
+    name: workloads.zk.cache.ghostbaby.io
 ```
 
 ## Create Zookeeper-operator Component
@@ -33,7 +33,7 @@ metadata:
   name: zk-component
 spec:
   workload:
-    apiVersion: cache.ghostbaby.io/v1alpha1
+    apiVersion: zk.cache.ghostbaby.io/v1alpha1
     kind: Workload
     spec:
       version: v3.5.6

@@ -56,26 +56,6 @@ rules:
   - patch
   - update
 - apiGroups:
-  - cache.ghostbaby.io
-  resources:
-  - workloads
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - cache.ghostbaby.io
-  resources:
-  - workloads/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
   - monitoring.coreos.com
   resources:
   - prometheusrules
@@ -100,3 +80,23 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - zk.cache.ghostbaby.io
+  resources:
+  - workloads
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - zk.cache.ghostbaby.io
+  resources:
+  - workloads/status
+  verbs:
+  - get
+  - patch
+  - update

@@ -4,7 +4,7 @@ metadata:
   name: zk-component
 spec:
   workload:
-    apiVersion: cache.ghostbaby.io/v1alpha1
+    apiVersion: zk.cache.ghostbaby.io/v1alpha1
     kind: Workload
     spec:
       version: v3.5.6

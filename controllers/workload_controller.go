@@ -61,8 +61,8 @@ type WorkloadReconciler struct {
 
 var ReconcileWaitResult = reconcile.Result{RequeueAfter: 30 * time.Second}
 
-// +kubebuilder:rbac:groups=cache.ghostbaby.io,resources=workloads,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=cache.ghostbaby.io,resources=workloads/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=zk.cache.ghostbaby.io,resources=workloads,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=zk.cache.ghostbaby.io,resources=workloads/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups="",resources=pods;configmaps;services;events;secret,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=monitoring.coreos.com,resources=servicemonitors;prometheusrules,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=apiextensions.k8s.io,resources=customresourcedefinitions,verbs=get;list
@@ -124,7 +124,6 @@ func (r *WorkloadReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 func (r *WorkloadReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	mapFn := handler.ToRequestsFunc(
 		func(a handler.MapObject) []reconcile.Request {
-
 			labels := a.Meta.GetLabels()
 			clusterName, isSet := labels[model.RoleName]
 			if !isSet {
