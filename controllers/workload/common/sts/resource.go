@@ -9,6 +9,7 @@ import (
 )
 
 func getResources(w *cachev1alpha1.Workload) corev1.ResourceRequirements {
+
 	reqCpu := w.Spec.Cluster.Resources.Requests.CPU
 	reqMem := w.Spec.Cluster.Resources.Requests.Memory
 	limCpu := w.Spec.Cluster.Resources.Limits.CPU

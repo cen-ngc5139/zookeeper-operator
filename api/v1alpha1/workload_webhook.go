@@ -40,7 +40,7 @@ func (r *Workload) SetupWebhookWithManager(mgr ctrl.Manager) error {
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 
-// +kubebuilder:webhook:path=/mutate-zk-cache-ghostbaby-io-v1alpha1-workload,mutating=true,failurePolicy=fail,groups=cache.ghostbaby.io,resources=workloads,verbs=create;update,versions=v1alpha1,name=mworkload.kb.io
+// +kubebuilder:webhook:path=/mutate-zk-cache-ghostbaby-io-v1alpha1-workload,mutating=true,failurePolicy=fail,groups=zk.cache.ghostbaby.io,resources=workloads,verbs=create;update,versions=v1alpha1,name=mworkload.kb.io
 
 var _ webhook.Defaulter = &Workload{}
 
@@ -72,7 +72,7 @@ func (r *Workload) Default() {
 }
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
-// +kubebuilder:webhook:verbs=create;update,path=/validate-zk-cache-ghostbaby-io-v1alpha1-workload,mutating=false,failurePolicy=fail,groups=cache.ghostbaby.io,resources=workloads,versions=v1alpha1,name=vworkload.kb.io
+// +kubebuilder:webhook:verbs=create;update,path=/validate-zk-cache-ghostbaby-io-v1alpha1-workload,mutating=false,failurePolicy=fail,groups=zk.cache.ghostbaby.io,resources=workloads,versions=v1alpha1,name=vworkload.kb.io
 
 var _ webhook.Validator = &Workload{}
 

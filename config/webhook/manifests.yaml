@@ -16,7 +16,7 @@ webhooks:
   name: mworkload.kb.io
   rules:
   - apiGroups:
-    - cache.ghostbaby.io
+    - zk.cache.ghostbaby.io
     apiVersions:
     - v1alpha1
     operations:
@@ -42,7 +42,7 @@ webhooks:
   name: vworkload.kb.io
   rules:
   - apiGroups:
-    - cache.ghostbaby.io
+    - zk.cache.ghostbaby.io
     apiVersions:
     - v1alpha1
     operations:
