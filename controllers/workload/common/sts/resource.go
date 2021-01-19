@@ -65,7 +65,7 @@ func getStsResource(sts *appsv1.StatefulSet) *cachev1alpha1.ZkResource {
 func IsUpgradeStsResource(expectSts *appsv1.StatefulSet, actualSts *appsv1.StatefulSet) bool {
 	expectEsResource := getStsResource(expectSts)
 	actualEsResource := getStsResource(actualSts)
-	//fmt.Println(expectEsResource, actualEsResource)
+
 	if expectEsResource.RequestCpu.String() != actualEsResource.RequestCpu.String() ||
 		expectEsResource.RequestMem.String() != actualEsResource.RequestMem.String() ||
 		expectEsResource.LimitCpu.String() != actualEsResource.LimitCpu.String() ||

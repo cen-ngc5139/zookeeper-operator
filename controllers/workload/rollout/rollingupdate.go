@@ -229,8 +229,6 @@ func NodesInCluster(cli *zk.BaseClient, nodeNames []string) (bool, bool, error) 
 		return false, false, err
 	}
 
-	//fmt.Println(nodes.Mode)
-
 	return nodes.Mode == 1, nodes.Mode != 0, nil
 }
 
