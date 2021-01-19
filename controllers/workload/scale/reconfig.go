@@ -127,7 +127,6 @@ func (s *Scale) ReConfig() error {
 			)
 			continue
 		}
-		//fmt.Println(result)
 	}
 
 	//调用zk-agent接口删除新节点到集群中reconfig
@@ -149,7 +148,6 @@ func (s *Scale) ReConfig() error {
 			)
 			continue
 		}
-		//fmt.Println(result)
 	}
 
 	return nil

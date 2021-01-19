@@ -86,7 +86,7 @@ type TemplateParams struct {
 // RenderScriptTemplate renders scriptTemplate using the given TemplateParams
 func RenderScriptTemplate(params TemplateParams) (string, error) {
 	tplBuffer := bytes.Buffer{}
-	//fmt.Println(params)
+
 	if err := scriptTemplate.Execute(&tplBuffer, params); err != nil {
 		return "", err
 	}
